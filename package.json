@@ -1,0 +1,11 @@
+{
+  "name": "feed",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^1.2.1",
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0"
+  }
+}
