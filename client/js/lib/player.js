@@ -42,9 +42,9 @@ class Player extends Actor {
                     if (this.charge < 100) this.charge += this.chargeSpeed * game.step * this.stepModifier;
                     else if (!this.chargeMax) {
                         this.chargeMax = true;
-                        game.step /= 2;
-                        this.stepModifier *= 2;
-                        this.animationKey *= 2;
+                        game.step /= 4;
+                        this.stepModifier *= 4;
+                        this.animationKey *= 4;
                     }
                 }
             }
@@ -56,9 +56,9 @@ class Player extends Actor {
                     this.charge = 0;
                     if (this.chargeMax) {
                         this.chargeMax = false;
-                        game.step *= 2;
-                        this.stepModifier /= 2;
-                        this.animationKey /= 2;
+                        game.step *= 4;
+                        this.stepModifier /= 4;
+                        this.animationKey /= 4;
                     }
                 }
             }
