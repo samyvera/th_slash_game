@@ -7,9 +7,18 @@ class Game {
         this.step = 1;
 
         this.player = new Player("Youmu Konpaku", new Vector2D(16, 16), new Vector2D(this.size.x / 2 - 8, this.size.y / 2 - 8));
-        this.enemies = [new Enemy("???", new Vector2D(16, 32), new Vector2D(this.size.x * 0.75 - 8, this.size.y - 64))];
+        this.enemies = [];
+
+        this.score = 0;
 
         this.update = mouse => {
+
+            if (this.relativeFrame % 64 === 0 && this.enemies.length < 10) {
+                var posX = Math.round(Math.random()) ? this.size.x : 0;
+                var posY = Math.round(Math.random()) ? this.size.y : 0;
+                this.enemies.push(new Enemy("???", new Vector2D(24, 24), new Vector2D(posX, posY)));
+            }
+
             this.mouse = {
                 x:mouse.x,
                 y:mouse.y,
@@ -27,21 +36,26 @@ class Game {
             else if (this.mouse.y > this.size.y - 32) this.mouse.y = this.size.y - 32;
 
             var touchEnemy = false;
-            this.enemies.forEach(enemy => {
-                if (this.mouse.startLine && this.mouse.endLine && this.lineRect(
+            this.enemies.forEach((enemy, i) => {
+                if (enemy.touched) {
+                    this.enemies.splice(i, 1);
+                    this.score += 10;
+                }
+                else if (!this.mouse.rightClick && this.mouse.startLine && this.mouse.endLine && this.lineRect(
                     this.mouse.startLine.x, this.mouse.startLine.y, this.mouse.endLine.x, this.mouse.endLine.y,
                     enemy.pos.x, enemy.pos.y, enemy.size.x, enemy.size.y)) {
-                    console.log('ok!');
                     touchEnemy = true;
-                    // this.mouse.startLine = null;
-                    // this.mouse.endLine = null;
+                    enemy.touched = true;
+                    mouse.startLine = null;
+                    mouse.endLine = null;
                 }
             });
-            if (!touchEnemy) {
+            if (!touchEnemy || this.mouse.rightClick) {
                 this.mouse.startLine = null;
                 this.mouse.endLine = null;
             }
 
+            this.enemies.forEach(enemy => enemy.act(this));
             this.player.act(this);
             this.relativeFrame += this.step;
             this.frame++;

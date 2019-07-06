@@ -56,17 +56,20 @@ class Display {
             var hudName = document.createElement("img");
             hudName.src = "img/hud.png";
             this.cx.drawImage(hudName, 0, 0, 128, 32, 0, 0, 128, 32);
+            
+            var hudName2 = document.createElement("img");
+            hudName2.src = "img/hud2.png";
+            this.cx.drawImage(hudName2, 0, 0, 128, 16, this.game.size.x - 128, 0, 128, 16);
 
             var player = this.game.player;
-            var fps = Math.round((time - this.lastTime) / 1000 * 3600) + "FPS";
             this.cx.fillStyle = "#fff";
             this.cx.textAlign = "right";
-            this.cx.font = "8px serif";
-            this.cx.fillText(fps, this.game.size.x, 6);
-            this.cx.fillText(Math.floor(this.game.relativeFrame) + "RF", this.game.size.x, 12);
-            this.cx.fillText(this.game.frame + "AF", this.game.size.x, 18);
+            this.cx.font = "6px serif";
+            var zeros = '';
+            for (let i = 0; i < 8 - this.game.score.toString().length; i++) zeros += '0';
+            this.cx.fillText(zeros + this.game.score, this.game.size.x - 4, 10);
             this.cx.textAlign = "left";
-            this.cx.fillText(player.name, 4, 11);
+            this.cx.fillText(player.name, 4, 10);
             if (player.charge) {
                 for (let i = 0; i < 100; i++) {
                     if (i <= player.charge) player.charge === 100 && player.animationTime % 2 === 0 ? this.cx.fillStyle = "#000" : this.cx.fillStyle = "#fff";
@@ -166,11 +169,6 @@ class Display {
             if (player.focus) {
                 this.cx.fillStyle = "#f008";
                 this.cx.fillRect(posX, posY, player.size.x, player.size.y);
-            }
-
-            if (player.attack) {
-                this.cx.fillStyle = "#00f5";
-                this.cx.fillRect(player.attack.pos.x, player.attack.pos.y, player.attack.size.x, player.attack.size.y);
             }
         }
 

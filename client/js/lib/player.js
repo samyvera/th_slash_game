@@ -22,10 +22,10 @@ class Player extends Actor {
         this.move = () => {
             var dx = (this.game.mouse.x - (this.pos.x + this.size.x / 2)) * .125;
             var dy = (this.game.mouse.y - (this.pos.y + this.size.y / 2)) * .125;
-            var distance = Math.sqrt(dx*dx + dy*dy);
-            if(distance > 5) {
-              dx *= 5/distance;
-              dy *= 5/distance;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > 5) {
+                dx *= 5 / distance;
+                dy *= 5 / distance;
             }
             this.pos.x += dx;
             this.pos.y += dy;
@@ -37,8 +37,7 @@ class Player extends Actor {
                 if (this.chargeCooldown > 0) {
                     this.chargeCooldown--;
                     this.action = 'stand';
-                }
-                else {
+                } else {
                     this.action = "charge";
                     if (this.charge < 100) this.charge += this.chargeSpeed * game.step * this.stepModifier;
                     else if (!this.chargeMax) {
@@ -46,10 +45,6 @@ class Player extends Actor {
                         game.step /= 2;
                         this.stepModifier *= 2;
                         this.animationKey *= 2;
-                        // if (this.myon) {
-                        //     this.myon.stepModifier *= 2;
-                        //     this.myon.animationKey *= 2;
-                        // }
                     }
                 }
             }
@@ -64,28 +59,16 @@ class Player extends Actor {
                         game.step *= 2;
                         this.stepModifier /= 2;
                         this.animationKey /= 2;
-                        // if (this.myon) {
-                        //     this.myon.stepModifier /= 2;
-                        //     this.myon.animationKey /= 2;
-                        // }
                     }
                 }
             }
 
-            
-            if (this.game.mouse.leftClick) {
-                var dir = this.direction ? this.size.x : -64;
-                this.attack = {
-                    pos:{ x:this.pos.x + dir, y:this.pos.y - this.size.y / 2 },
-                    size: { x:64, y:32 }
-                }
-            }
+            if (!this.game.mouse.leftClick || this.game.mouse.rightClick) this.move();
 
             if (this.game.mouse.x > this.pos.x + this.size.x / 2) this.direction = true;
             else if (this.game.mouse.x !== this.pos.x + this.size.x / 2) this.direction = false;
 
             this.fly = this.pos.y < this.game.size.y - (32 + this.size.y / 2 + 1);
-            this.move();
 
             this.animationTime += game.step * this.stepModifier;
         };
