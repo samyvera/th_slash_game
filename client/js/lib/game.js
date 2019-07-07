@@ -37,11 +37,11 @@ class Game {
 
             var touchEnemy = false;
             this.enemies.forEach((enemy, i) => {
-                if (enemy.touched) {
+                if (enemy.touched && enemy.hitCoolDown <= 0) {
                     this.enemies.splice(i, 1);
                     this.score += 10;
                 }
-                else if (!this.mouse.rightClick && this.mouse.startLine && this.mouse.endLine && this.lineRect(
+                else if (!this.player.touched && !this.mouse.rightClick && this.mouse.startLine && this.mouse.endLine && this.lineRect(
                     this.mouse.startLine.x, this.mouse.startLine.y, this.mouse.endLine.x, this.mouse.endLine.y,
                     enemy.pos.x, enemy.pos.y, enemy.size.x, enemy.size.y)) {
                     touchEnemy = true;

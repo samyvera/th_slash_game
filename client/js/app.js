@@ -4,12 +4,9 @@ window.onload = () => {
     class App {
         constructor(socket) {
             this.socket = socket;
-
             this.setupSocket = () => {
                 this.socket.on("welcome", () => console.log('connected'));
-
                 this.socket.on('update', data => leaderboard = data);
-
                 this.socket.on("connect_failed", () => this.socket.close());
                 this.socket.on("disconnect", () => this.socket.close());
             }
@@ -64,12 +61,24 @@ window.onload = () => {
 
     var game = new Game();
     var display = new Display(game, document.body, zoom);
+
     var nameInput = document.createElement('input');
     nameInput.id = 'name';
     nameInput.value = '';
     nameInput.maxLength = 10;
     nameInput.placeholder = 'Enter your nickname';
     document.body.appendChild(nameInput);
+
+    var informations = document.createElement('p');
+    informations.id = 'informations';
+    informations.innerHTML = 'How to Play ?';
+    informations.onclick = () => document.getElementById('informations').style.display = 'none';
+    document.body.appendChild(informations);
+
+    var button = document.createElement('button');
+    button.innerHTML = 'Informations';
+    button.onclick = () => document.getElementById('informations').style.display = 'flex';
+    document.body.appendChild(button);
 
     var updateScore = () => app.socket.emit('update', { name:document.getElementById('name').value, score:game.score });
     setInterval(updateScore, 1000);

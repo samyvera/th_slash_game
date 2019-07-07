@@ -162,21 +162,27 @@ class Display {
 
         this.drawPlayer = (player) => {
             var width = 64;
-            var height = 32;
+            var height = 64;
             var posX = player.pos.x;
             var posY = player.pos.y;
             var centerX = posX + player.size.x / 2;
             var centerY = posY + player.size.y / 2;
             var spriteY = 0;
 
-            if (player.action === 'charge' || player.action === 'stand') {
-                if (player.animationKey < 8 * this.game.step * player.stepModifier) {
-                    spriteY = 1;
-                    if (player.animationKey === 0) player.animationTime = 0;
-                    player.animationKey += 1 / 4 * this.game.step * player.stepModifier;
-                } else spriteY = 2;
-            } else player.animationKey = 0;
-            var spriteX = Math.floor(player.animationTime / 8) % 4;
+            if (player.touched) {
+                spriteY = 4;
+                var spriteX = Math.floor(player.animationTime / 4) % 2;
+            }
+            else {
+                if (player.action === 'charge' || player.action === 'stand') {
+                    if (player.animationKey < 8 * this.game.step * player.stepModifier) {
+                        spriteY = 1;
+                        if (player.animationKey === 0) player.animationTime = 0;
+                        player.animationKey += 1 / 4 * this.game.step * player.stepModifier;
+                    } else spriteY = 2;
+                } else player.animationKey = 0;
+                var spriteX = Math.floor(player.animationTime / 8) % 4;
+            }
             var sprites = document.createElement("img");
             sprites.src = "img/youmu.png";
 
@@ -203,11 +209,12 @@ class Display {
             var posY = enemy.pos.y;
 
             var enemyImg = document.createElement("img");
-            enemyImg.src = "img/fairy.png";
+            enemyImg.src = "img/fairy" + enemy.color + ".png";
 
             this.cx.save();
             if (posX > this.game.player.pos.x) this.flipHorizontally(this.cx, posX + enemy.size.x / 2);
-            this.cx.drawImage(enemyImg,  Math.floor(this.animationTime / 16) % 2 * 24, 0, 24, 24, posX, posY, 24, 24);
+            if (enemy.touched) this.cx.drawImage(enemyImg, Math.floor(this.animationTime / 4) % 2 * 24, 24, 24, 24, posX, posY, 24, 24);
+            else this.cx.drawImage(enemyImg,  Math.floor(this.animationTime / 16) % 2 * 24, 0, 24, 24, posX, posY, 24, 24);
             this.cx.restore();
         }
 

@@ -5,8 +5,11 @@ class Enemy extends Actor {
         this.animationTime = 0;
         this.animationKey = 0;
         this.stepModifier = 1;
+        
+        this.color = Math.floor(Math.random() * 3) + 1;
 
         this.touched = false;
+        this.hitCoolDown = 32;
 
         this.move = game => {
             var player = game.player;
@@ -28,6 +31,9 @@ class Enemy extends Actor {
                 this.animationTime += game.step * this.stepModifier;
 
                 this.move(game);
+            }
+            else {
+                this.hitCoolDown--;
             }
         };
     }
