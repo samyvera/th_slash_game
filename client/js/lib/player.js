@@ -19,6 +19,7 @@ class Player extends Actor {
 
         this.attack = null;
         this.circleRange = 64;
+        this.endCircle = false;
 
         this.touched = false;
         this.hitCoolDown = 32;
@@ -53,6 +54,7 @@ class Player extends Actor {
 
         this.act = game => {
             this.game = game;
+            this.endCircle = false;
 
             this.game.enemies.forEach((enemy, i) => {
                 if (!this.touched && !enemy.touched && this.game.intersect(this.pos, this.size, enemy.pos, enemy.size)) {
@@ -97,6 +99,7 @@ class Player extends Actor {
                     this.action = null;
                     this.charge = 0;
                     if (this.chargeMax) {
+                        this.endCircle = true;
                         this.chargeMax = false;
                         game.step *= 4;
                         this.stepModifier /= 4;

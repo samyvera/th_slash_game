@@ -71,12 +71,15 @@ window.onload = () => {
 
     var informations = document.createElement('p');
     informations.id = 'informations';
-    informations.innerHTML = 'How to Play ?';
+    informations.innerHTML = 'Eliminate fairies to get the highest score !<br><br>' +
+        'Perform a normal attack by holding while dragging the left click and releasing it to create a line that cuts across enemies<br><br>' +
+        'Hold the right click to charge, slow time and perform a powerful circular attack !<br><br>' +
+        'Warning ! If a fairy hits you, your score starts from scratch !';
     informations.onclick = () => document.getElementById('informations').style.display = 'none';
     document.body.appendChild(informations);
 
     var button = document.createElement('button');
-    button.innerHTML = 'Informations';
+    button.innerHTML = 'About this game';
     button.onclick = () => document.getElementById('informations').style.display = 'flex';
     document.body.appendChild(button);
 
@@ -90,6 +93,11 @@ window.onload = () => {
         game.update(mouse);
         display.drawFrame(time, zoom, leaderboard);
 
+        if (mouse.startLine && mouse.endLine && !game.touchEnemy && !mouse.leftClick) {
+            mouse.startLine = null;
+            mouse.endLine = null;
+        }
+        
         requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);

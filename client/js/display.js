@@ -15,6 +15,9 @@ class Display {
         this.cx.scale(this.zoom, this.zoom);
         this.cx.imageSmoothingEnabled = false;
 
+        this.swordAttack = false;
+        this.swordFrame = 24;
+
         this.drawFrame = (time, zoom, leaderboard) => {
             this.drawBackground();
             this.game.enemies.forEach(enemy => this.drawEnemy(enemy));
@@ -32,6 +35,14 @@ class Display {
             this.drawMouseLine();
             this.drawLeaderboard(leaderboard);
         };
+
+        this.drawSword = player => {
+            var swordImg = document.createElement("img");
+            swordImg.src = "img/sword.png";
+            this.cx.drawImage(swordImg, (18 - this.swordFrame) * 192, 0, 192, 192, player.pos.x + player.size.x / 2 - 96, player.pos.y + player.size.y / 2 - 96, 192, 192);
+            this.swordFrame--;
+            if (this.swordFrame < 0) this.swordFrame = 18;
+        }
 
         this.drawLeaderboard = leaderboard => {
             var lead = document.createElement("img");
@@ -58,7 +69,14 @@ class Display {
 
         this.drawMouseLine = () => {
             if (this.game.mouse.startLine && this.game.mouse.endLine) {
-                this.cx.strokeStyle = "#f00";
+                this.cx.lineWidth = 3;
+                this.cx.strokeStyle = "#77f";
+                this.cx.beginPath();
+                this.cx.moveTo(this.game.mouse.startLine.x, this.game.mouse.startLine.y);
+                this.cx.lineTo(this.game.mouse.endLine.x, this.game.mouse.endLine.y);
+                this.cx.stroke();
+                this.cx.lineWidth = 2;
+                this.cx.strokeStyle = "#fff";
                 this.cx.beginPath();
                 this.cx.moveTo(this.game.mouse.startLine.x, this.game.mouse.startLine.y);
                 this.cx.lineTo(this.game.mouse.endLine.x, this.game.mouse.endLine.y);
@@ -201,6 +219,10 @@ class Display {
             if (player.focus) {
                 this.cx.fillStyle = "#f008";
                 this.cx.fillRect(posX, posY, player.size.x, player.size.y);
+            }
+
+            if (player.endCircle || this.swordFrame !== 18) {
+                this.drawSword(player);
             }
         }
 

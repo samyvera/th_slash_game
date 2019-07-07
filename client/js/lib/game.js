@@ -35,7 +35,7 @@ class Game {
             if (this.mouse.y < 0) this.mouse.y = 0;
             else if (this.mouse.y > this.size.y - 32) this.mouse.y = this.size.y - 32;
 
-            var touchEnemy = false;
+            this.touchEnemy = false;
             this.enemies.forEach((enemy, i) => {
                 if (enemy.touched && enemy.hitCoolDown <= 0) {
                     this.enemies.splice(i, 1);
@@ -44,13 +44,13 @@ class Game {
                 else if (!this.player.touched && !this.mouse.rightClick && this.mouse.startLine && this.mouse.endLine && this.lineRect(
                     this.mouse.startLine.x, this.mouse.startLine.y, this.mouse.endLine.x, this.mouse.endLine.y,
                     enemy.pos.x, enemy.pos.y, enemy.size.x, enemy.size.y)) {
-                    touchEnemy = true;
+                    this.touchEnemy = true;
                     enemy.touched = true;
                     mouse.startLine = null;
                     mouse.endLine = null;
                 }
             });
-            if (!touchEnemy || this.mouse.rightClick) {
+            if (this.mouse.rightClick) {
                 this.mouse.startLine = null;
                 this.mouse.endLine = null;
                 mouse.endLine = null;
