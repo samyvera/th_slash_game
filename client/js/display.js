@@ -202,8 +202,13 @@ class Display {
             var posX = enemy.pos.x;
             var posY = enemy.pos.y;
 
-            this.cx.fillStyle = "#f00";
-            this.cx.fillRect(posX, posY, enemy.size.x, enemy.size.y);
+            var enemyImg = document.createElement("img");
+            enemyImg.src = "img/fairy.png";
+
+            this.cx.save();
+            if (posX > this.game.player.pos.x) this.flipHorizontally(this.cx, posX + enemy.size.x / 2);
+            this.cx.drawImage(enemyImg,  Math.floor(this.animationTime / 16) % 2 * 24, 0, 24, 24, posX, posY, 24, 24);
+            this.cx.restore();
         }
 
         this.flipHorizontally = (context, around) => {
