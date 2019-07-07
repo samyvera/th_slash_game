@@ -1,14 +1,20 @@
 window.onload = () => {
+    var leaderboard = [];
+
     class App {
         constructor(socket) {
-            this.setupSocket = () => {
-                socket.on("welcome", () => console.log('welcome !'));
+            this.socket = socket;
 
-                socket.on("connect_failed", () => socket.close());
-                socket.on("disconnect", () => socket.close());
+            this.setupSocket = () => {
+                this.socket.on("welcome", () => console.log('connected'));
+
+                this.socket.on('update', data => leaderboard = data);
+
+                this.socket.on("connect_failed", () => this.socket.close());
+                this.socket.on("disconnect", () => this.socket.close());
             }
             this.setupSocket();
-            socket.emit('join');
+            this.socket.emit('join');
         }
     }
     var app = new App(io());
@@ -58,13 +64,22 @@ window.onload = () => {
 
     var game = new Game();
     var display = new Display(game, document.body, zoom);
+    var nameInput = document.createElement('input');
+    nameInput.id = 'name';
+    nameInput.value = '';
+    nameInput.maxLength = 10;
+    nameInput.placeholder = 'Enter your nickname';
+    document.body.appendChild(nameInput);
+
+    var updateScore = () => app.socket.emit('update', { name:document.getElementById('name').value, score:game.score });
+    setInterval(updateScore, 1000);
 
     var frame = (time) => {
         if (mouse.history.length > 10) mouse.history.splice(0, 1);
         mouse.history.push({ x:mouse.x, y:mouse.y });
 
         game.update(mouse);
-        display.drawFrame(time, zoom);
+        display.drawFrame(time, zoom, leaderboard);
 
         requestAnimationFrame(frame);
     };

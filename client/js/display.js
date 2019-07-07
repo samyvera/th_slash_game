@@ -1,7 +1,9 @@
 class Display {
     constructor(game, parent, zoom) {
         this.canvas = document.createElement('canvas');
-        this.cx = this.canvas.getContext("2d", { alpha: false });
+        this.cx = this.canvas.getContext("2d", {
+            alpha: false
+        });
         this.lastTime = null;
 
         this.zoom = zoom;
@@ -13,7 +15,7 @@ class Display {
         this.cx.scale(this.zoom, this.zoom);
         this.cx.imageSmoothingEnabled = false;
 
-        this.drawFrame = (time, zoom) => {
+        this.drawFrame = (time, zoom, leaderboard) => {
             this.drawBackground();
             this.game.enemies.forEach(enemy => this.drawEnemy(enemy));
             this.drawPlayer(this.game.player);
@@ -28,8 +30,32 @@ class Display {
                 this.cx.imageSmoothingEnabled = false;
             }
             this.drawMouseLine();
+            this.drawLeaderboard(leaderboard);
         };
-        
+
+        this.drawLeaderboard = leaderboard => {
+            var lead = document.createElement("img");
+            lead.src = "img/leaderboard.png";
+            this.cx.drawImage(lead, 0, 0, 80, 160, this.game.size.x - 80, 16, 80, 160);
+
+            var newleaderboard = leaderboard.sort((a, b) => b.score - a.score);
+
+            this.cx.fillStyle = "#fff";
+            this.cx.font = "6px serif";
+            this.cx.textAlign = "center";
+            this.cx.fillText('Leaderboard', this.game.size.x - 40, 26);
+            newleaderboard.forEach((player, i) => {
+                if (i < 10) {
+                    this.cx.textAlign = "left";
+                    this.cx.fillText(player.name, this.game.size.x - 74, 34 + i * 8);
+                    this.cx.textAlign = "right";
+                    var zeros = '';
+                    for (let i = 0; i < 8 - player.score.toString().length; i++) zeros += '0';
+                    this.cx.fillText(zeros + player.score, this.game.size.x - 6, 34 + i * 8);
+                }
+            });
+        }
+
         this.drawMouseLine = () => {
             if (this.game.mouse.startLine && this.game.mouse.endLine) {
                 this.cx.strokeStyle = "#f00";
@@ -56,7 +82,7 @@ class Display {
             var hudName = document.createElement("img");
             hudName.src = "img/hud.png";
             this.cx.drawImage(hudName, 0, 0, 128, 32, 0, 0, 128, 32);
-            
+
             var hudName2 = document.createElement("img");
             hudName2.src = "img/hud2.png";
             this.cx.drawImage(hudName2, 0, 0, 128, 16, this.game.size.x - 128, 0, 128, 16);
@@ -74,6 +100,7 @@ class Display {
                 for (let i = 0; i < 100; i++) {
                     if (i <= player.charge) player.charge === 100 && player.animationTime % 2 === 0 ? this.cx.fillStyle = "#000" : this.cx.fillStyle = "#fff";
                     else this.cx.fillStyle = "#000";
+                    if (player.chargeMax && i < player.slowMotionTime * 100 / 64) this.cx.fillStyle = '#0f0';
                     this.cx.fillRect(4 + i, 16, 1, 2);
                 }
             }
@@ -85,7 +112,7 @@ class Display {
             this.cx.drawImage(back1, 0, 0, 512, 256, 0, 0, 512, 256);
 
             if (this.game.player && this.game.player.action === 'charge') this.drawSakura();
-            
+
             var back = document.createElement("img");
             back.src = "img/back.png";
             this.cx.drawImage(back, 0, 0, 512, 256, 0, 0, 512, 256);
@@ -115,12 +142,13 @@ class Display {
             magic.src = "img/magic.png";
             var magic2 = document.createElement("img");
             magic2.src = "img/magic2.png";
+            var size = this.game.player.chargeMax ? 128 : 64;
             this.cx.translate(posX, posY);
             this.cx.rotate(this.animationTime * 2 % 360 * Math.PI / 180);
-            this.cx.drawImage(magic, 0, 0, 64, 64, -32, -32, 64, 64);
+            this.cx.drawImage(magic, 0, 0, 64, 64, -size / 2, -size / 2, size, size);
             this.cx.rotate(-(this.animationTime * 2 % 360 * Math.PI / 180));
             this.cx.rotate(-(this.animationTime % 360 * Math.PI / 180));
-            this.cx.drawImage(magic2, 0, 0, 64, 64, -32, -32, 64, 64);
+            this.cx.drawImage(magic2, 0, 0, 64, 64, -size / 2, -size / 2, size, size);
             this.cx.rotate(this.animationTime % 360 * Math.PI / 180);
             this.cx.translate(-posX, -posY);
         }
@@ -131,7 +159,7 @@ class Display {
             var amplitude = Math.floor(Math.sin(this.game.player.animationTime * 0.1) * 2) + 2;
             this.cx.drawImage(shadow, spriteX * width, 3 * height, width, height, centerX - width / 2 - amplitude, centerY - height / 2 - amplitude / 2, width + amplitude * 2, height + amplitude);
         }
-        
+
         this.drawPlayer = (player) => {
             var width = 64;
             var height = 32;
@@ -146,15 +174,13 @@ class Display {
                     spriteY = 1;
                     if (player.animationKey === 0) player.animationTime = 0;
                     player.animationKey += 1 / 4 * this.game.step * player.stepModifier;
-                }
-                else spriteY = 2;
-            }
-            else player.animationKey = 0;
+                } else spriteY = 2;
+            } else player.animationKey = 0;
             var spriteX = Math.floor(player.animationTime / 8) % 4;
             var sprites = document.createElement("img");
             sprites.src = "img/youmu.png";
 
-            if (player.fly) this.drawMagic(centerX, centerY);
+            this.drawMagic(centerX, centerY);
             this.drawMyon();
 
 

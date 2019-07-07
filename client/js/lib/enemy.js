@@ -12,8 +12,8 @@ class Enemy extends Actor {
             var player = game.player;
             var speed = game.step * 2;
 
-            var dx = (player.pos.x - (this.pos.x + this.size.x / 2)) * .125;
-            var dy = (player.pos.y - (this.pos.y + this.size.y / 2)) * .125;
+            var dx = (player.pos.x + player.size.x / 2 - (this.pos.x + this.size.x / 2)) * .125;
+            var dy = (player.pos.y + player.size.y / 2 - (this.pos.y + this.size.y / 2)) * .125;
             var distance = Math.sqrt(dx * dx + dy * dy);
             if (distance > speed) {
                 dx *= speed / distance;

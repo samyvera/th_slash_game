@@ -6,14 +6,14 @@ class Game {
         this.relativeFrame = 0;
         this.step = 1;
 
-        this.player = new Player("Youmu Konpaku", new Vector2D(16, 16), new Vector2D(this.size.x / 2 - 8, this.size.y / 2 - 8));
+        this.player = new Player("Youmu Konpaku", new Vector2D(8, 8), new Vector2D(this.size.x / 2 - 4, this.size.y / 2 - 4));
         this.enemies = [];
 
         this.score = 0;
 
         this.update = mouse => {
 
-            if (this.relativeFrame % 64 === 0 && this.enemies.length < 10) {
+            if (Math.floor(this.relativeFrame) % 64 === 0 && this.step === 1 && this.enemies.length < 10) {
                 var posX = Math.round(Math.random()) ? this.size.x : 0;
                 var posY = Math.round(Math.random()) ? this.size.y : 0;
                 this.enemies.push(new Enemy("???", new Vector2D(24, 24), new Vector2D(posX, posY)));
@@ -53,6 +53,7 @@ class Game {
             if (!touchEnemy || this.mouse.rightClick) {
                 this.mouse.startLine = null;
                 this.mouse.endLine = null;
+                mouse.endLine = null;
             }
 
             this.enemies.forEach(enemy => enemy.act(this));
@@ -73,6 +74,17 @@ class Game {
             var uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
             var uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
             return uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1;
+        }
+
+        this.intersect = (pos1, size1, pos2, size2) => !(pos2.x > pos1.x + size1.x || pos2.x + size2.x < pos1.x || pos2.y > pos1.y + size1.y || pos2.y + size2.y < pos1.y);
+
+        this.rectCircle = (circle, rect) => {
+            var distX = Math.abs(circle.x - rect.x - rect.w / 2);
+            var distY = Math.abs(circle.y - rect.y - rect.h / 2);
+        
+            if (distX > (rect.w / 2 + circle.r) || distY > (rect.h / 2 + circle.r)) return false;
+            else if (distX <= (rect.w / 2) || distY <= (rect.h / 2)) return true;
+            else return (Math.pow(distX - rect.w / 2, 2) + Math.pow(distY - rect.h / 2, 2) <= (circle.r * circle.r));
         }
     }
 }
